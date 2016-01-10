@@ -15,7 +15,8 @@ if(BUILD_DOXY_DOC)
 		## typicaly for storing images or doxygen pages...
 		configure_file(doxyfile.in 				${CMAKE_BINARY_DIR}/doxyfile 			 @ONLY)
 		configure_file(doxyfileUpdate.cmake.in	${CMAKE_BINARY_DIR}/doxyfileUpdate.cmake @ONLY)
-		add_custom_target(doxyDoc ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/doxyfileUpdate.cmake
+		add_custom_target(doxyDoc ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_SOURCE_DIR}/../make_documentation.cmake
+			COMMAND ${CMAKE_COMMAND} -P ${CMAKE_BINARY_DIR}/doxyfileUpdate.cmake
 			COMMAND ${DOXYGEN_EXECUTABLE} "${CMAKE_BINARY_DIR}/doxyfile"
 			WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}
 			COMMENT "Building user's documentation into doxyDoc build dir..."
