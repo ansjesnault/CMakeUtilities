@@ -1,0 +1,62 @@
+# pragma once
+if(__cmake_install_cluster_cmake_INCLUDED__)
+	return()
+else()
+	set(__cmake_install_cluster_cmake_INCLUDED__ ON)
+endif()
+
+cmake_minimum_required(VERSION 2.8)
+
+## CMAKE_DOCUMENTATION_START cmake_install-cluster.cmake.in
+##
+## Copy the current installation on cluster slaves.\\n
+## This allow to create complete directories tree for 
+## the installation path if don't exist for the dest (based on the CMAKE_INSTALL_PREFIX).\\n
+## This file is used to generate a custom install-cluster target :
+## see \\ref project_install_cluster.\\n
+## PROJECT_INSTALL_CLUSTER_SLAVES have to be set before calling cmake configure with this file.\\n
+## It contain all the slaves host name used to establish the network connexion.\\n
+##\\n
+## advice: use ssh-agent and ssh-add \\n
+## example: \\n
+##
+##  \\code
+##  username@host-master:~$             	                                \n
+##   ssh-agent                                                              \n
+##  SSH_AUTH_SOCK=/tmp/ssh-oHpLt16452/agent.16452; export SSH_AUTH_SOCK;    \n
+##  SSH_AGENT_PID=16453; export SSH_AGENT_PID;                              \n
+##  echo Agent pid 16453;                                                   \n
+##\n
+##  username@host-master:~$      		                                    \n
+##   SSH_AUTH_SOCK=/tmp/ssh-oHpLt16452/agent.16452; export SSH_AUTH_SOCK;   \n
+##   SSH_AGENT_PID=16453; export SSH_AGENT_PID;                             \n
+##   echo Agent pid 16453;                                                  \n
+##\n
+## username@host-master:~$		                                            \n
+##  ssh-add                                                                 \n
+## Enter passphrase for /user/username/home/.ssh/id_rsa:                    \n
+## Identity added: /user/username/home/.ssh/id_rsa (/user/username/home/.ssh/id_rsa)\n
+## \\endcode
+##\\n
+## TODO: make the install-cluster custom target works with Windows (see cwRync or DelatCopy)
+##
+## CMAKE_DOCUMENTATION_END
+if(UNIX)
+    set(slaves @PROJECT_INSTALL_CLUSTER_SLAVES@)
+    foreach(slave ${slaves})
+        execute_process(COMMAND ${CMAKE_COMMAND} -E echo "***Call rsync (copy @CMAKE_INSTALL_PREFIX@) for ${slave}***")
+        execute_process(COMMAND ssh ${slave} mkdir -p @CMAKE_INSTALL_PREFIX@)
+        ## rsync options : 
+            ## -a => archive mode => keep dirs files and links attributs, permissions, properties
+            ## -r => recursive mode
+            ## -P => (same as --partial --progress) keep incomplet transferd files and show transfert progression
+            ## -u => transfert only more recent files (update if file src is more recent than the dest file)
+            ## -v => verbose mode  
+        execute_process(COMMAND rsync -arPuv @CMAKE_INSTALL_PREFIX@/ ${slave}:@CMAKE_INSTALL_PREFIX@)
+    endforeach()
+endif()
+
+if(WIN32)
+##http://www.commentcamarche.net/faq/7040-rsync-sous-windows
+## cwRync or DeltaCopy
+endif()

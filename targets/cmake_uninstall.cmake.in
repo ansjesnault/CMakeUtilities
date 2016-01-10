@@ -1,0 +1,73 @@
+# pragma once
+if(__cmake_uninstall_cmake_INCLUDED__)
+	return()
+else()
+	set(__cmake_uninstall_cmake_INCLUDED__ ON)
+endif()
+
+cmake_minimum_required(VERSION 2.8)
+
+## CMAKE_DOCUMENTATION_START cmake_uninstall.cmake.in
+##
+##  Uninstall your project giving an install manifest file as parameter.                \\n
+##  It use *install_manifest.txt for uninstall all files installed with make install.   \\n
+##  Used by \\ref project_uninstall.                                                    \\n
+##  Then, after a make install, you can run make uninstall.                             \\n
+##
+## TODO: Delete also directory 
+## (becarful, not problem under windows and linux if it's a local install but
+## have to deal with the défault install path to usr/local/lib[64])
+##
+## CMAKE_DOCUMENTATION_END
+
+if(NOT EXISTS "@CMAKE_BINARY_DIR@/install_manifest.txt")
+    message(FATAL_ERROR "Cannot find install manifest: \"@CMAKE_BINARY_DIR@/install_manifest.txt\"")
+endif()
+
+set(CMAKE_COMMAND @CMAKE_COMMAND@)
+
+## CMAKE_DOCUMENTATION_START uninstall
+##  
+## Internal use from \\ref cmake_uninstall file. \\n
+## Function to Uninstall files contained in install_manifest file.
+## \\code
+## uninstall( <install_manifest_filePath> )
+## \\endcode
+##  
+## CMAKE_DOCUMENTATION_END
+function(uninstall install_manifest_filePath)
+    file(READ "${install_manifest_filePath}" files)
+    string(REGEX REPLACE "\n" ";" files "${files}")
+
+    cmake_policy(SET CMP0007 NEW)
+    list(REVERSE files)
+
+    foreach(file ${files})
+        message(STATUS "Uninstalling \"$ENV{DESTDIR}${file}\"")
+        if(EXISTS "$ENV{DESTDIR}${file}")
+            execute_process(
+                COMMAND ${CMAKE_COMMAND} -E remove "$ENV{DESTDIR}${file}"
+                OUTPUT_VARIABLE rm_out
+                RESULT_VARIABLE rm_retval
+            )
+            if(NOT ${rm_retval} EQUAL 0)
+                message(FATAL_ERROR "Problem when removing \"$ENV{DESTDIR}${file}\"")
+            endif()
+        elseif(IS_SYMLINK "$ENV{DESTDIR}${file}")
+            execute_process(
+                COMMAND ${CMAKE_COMMAND} -E remove "$ENV{DESTDIR}${file}"
+                OUTPUT_VARIABLE rm_out
+                RESULT_VARIABLE rm_retval
+            )
+            if(NOT "${rm_retval}" STREQUAL 0)
+                message(STATUS "File \"$ENV{DESTDIR}${file}\" does not exist.")
+            endif()
+        endif()
+    endforeach()
+endfunction()
+
+file(GLOB maniFiles "@CMAKE_BINARY_DIR@/*install_manifest.txt")
+foreach(maniFile ${maniFiles})
+    message(STATUS "Uninstall => entrer in: ${maniFile}")
+    uninstall(${maniFile})
+endforeach()

@@ -1,0 +1,25 @@
+# pragma once
+if(__doxyfile_update_cmake_INCLUDED__)
+	return()
+else()
+	set(__doxyfile_update_cmake_INCLUDED__ ON)
+endif()
+
+cmake_minimum_required(VERSION 2.8)
+
+## CMAKE_DOCUMENTATION_START doxyfileUpdate.cmake.in
+##
+## Get linux / or windows (with the help of date.bat file) current date
+## in order to update the end of the README.md file
+##
+## CMAKE_DOCUMENTATION_END
+
+if(WIN32)
+	execute_process(COMMAND cmd /c @CMAKE_HOME_DIRECTORY@/doc/dateTime.bat OUTPUT_VARIABLE dateCmdOut)
+elseif()
+	execute_process(COMMAND date '+%A %W %Y %X' OUTPUT_VARIABLE dateCmdOut)
+endif()
+if(dateCmdOut)
+	message(STATUS "Update the last doc update time (into README.md) to : ${dateCmdOut}")
+	file(APPEND @CMAKE_HOME_DIRECTORY@/README.md \n${dateCmdOut})
+endif()

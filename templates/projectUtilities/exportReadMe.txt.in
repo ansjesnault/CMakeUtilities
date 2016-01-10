@@ -1,0 +1,14 @@
+Here, for @PACKAGE_NAME@, Use_@PACKAGE_NAME@.cmake file and @PACKAGE_NAME@Config.cmake file allow others end-users to include @PACKAGE_NAME@ into theire own project.
+
+All user have to do is to include the Use@PACKAGE_NAME@.cmake file into theire own CMakeLists.txt instead of using a Find@PACKAGE_NAME@.cmake module.
+
+Piece of code:
+find_package(@PACKAGE_NAME@) # you may need to use NO_MODULE flag
+if(@PACKAGE_NAME@_FOUND)
+    if(USE_@PACKAGE_NAME@)
+        include(${USE_@PACKAGE_NAME@}))
+    endif()
+endif()
+
+This allow you to get (imported) directly all targets from @PACKAGE_NAME@ into your CMake project.
+So it's not anymore a FindPackageModule.cmake which try to find all @PACKAGE_NAME@ targets but @PACKAGE_NAME@ which provide a way to get it with this file ! cool!

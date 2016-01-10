@@ -1,0 +1,23 @@
+// Export.h.in --- Handle visual studio dll import/export
+// Under Windows, for shared libraries (DLL) we need to define export on compilation
+// or import on use (like a third party project).
+// We exploit here the fact that cmake auto set xxx_EXPORTS (with S) on compilation.
+
+#ifdef BUILD_SHARED_LIBS
+#   undef BUILD_SHARED_LIBS
+#endif
+#cmakedefine BUILD_SHARED_LIBS
+
+#if defined (_MSC_VER) && defined(BUILD_SHARED_LIBS) 
+#   if defined (@PROJECT_NAME@_EXPORTS)
+#       define @target_name_uc@_EXPORT __declspec(dllexport)
+#   else  
+#       define @target_name_uc@_EXPORT __declspec(dllimport)
+#   endif 
+#else
+#   define @target_name_uc@_EXPORT
+#endif
+
+#ifdef BUILD_SHARED_LIBS
+#   undef BUILD_SHARED_LIBS
+#endif

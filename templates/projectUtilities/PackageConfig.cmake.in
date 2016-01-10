@@ -1,0 +1,32 @@
+## CMAKE_DOCUMENTATION_START PackageConfig.cmake.in
+##
+##  Generic camke script to generate your export project file (see \\<PACKAGE_NAME\\>Config.cmake)
+##
+##  File which define the USE_\\<PACKAGE_NAME\\> variable for another project.\\n
+##  \\n
+##  When you export your project (see \\ref project_export from \\ref project_tools file)
+##  cmake will generate an export file containing all your project's targets imported.\\n
+##  \\n
+##  Here we just set the cmake variable (USE_\\<PACKAGE_NAME\\>) pointing to the file which do
+##  the import \\<PACKAGE_NAME\\> project stuff.
+##  \\li see \\ref Use\\<PACKAGE_NAME\\>_Dependencies cmake script file
+##  \\li see \\ref UsePackage cmake script file
+##  \\n
+##  Usage:\\n
+##  Set your \\<PACKAGE_NAME\\>_DIR to \\<\\<PACKAGE_NAME\\> Root\\>/cmake
+##  In your CMakeLists.txt
+##      \\code
+##      find_package(PACKAGE_NAME NO_MODULE)\n
+##      include(\${USE_PACKAGE_NAME})
+##      \\endcode
+##
+##  So : \\<PACKAGE_NAME\\>_LIBRARIES is available for the other project
+##
+## CMAKE_DOCUMENTATION_END
+
+cmake_minimum_required(VERSION 2.8)
+
+## Imported targets from \\<PACKAGE_NAME\\> and USE it
+get_filename_component(@PACKAGE_NAME@_IMPORT_PREFIX "${CMAKE_CURRENT_LIST_FILE}" PATH) # cmake dir
+get_filename_component(@PACKAGE_NAME@_IMPORT_PREFIX "${@PACKAGE_NAME@_IMPORT_PREFIX}" PATH) # root dir
+set(USE_@PACKAGE_NAME@ ${@PACKAGE_NAME@_IMPORT_PREFIX}/cmake/Use@PACKAGE_NAME@.cmake)
